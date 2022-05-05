@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug game",
+            "cargo": {
+                "args": [
+                    "build",
+                ],
+                "filter": {
+                    "kind": "bin",
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+    ]
+}
