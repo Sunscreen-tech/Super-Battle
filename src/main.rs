@@ -4,6 +4,7 @@ use sunscreen::{
 };
 
 use std::collections::HashMap;
+use std::io::Write;
 
 #[derive(Clone)]
 pub struct Nft {
@@ -116,6 +117,74 @@ l  .[_]          :          \              :  r[]/_.  /
 
 ";
 
+const GOKU_2: &str = r"
+                   `\-.   `
+                      \ `.  `
+                       \  \ |
+              __.._    |   \.       S O N - G O K U
+       ..---~~     ~ . |    Y
+         ~-.          `|    |
+            `.               `~~--.
+              \                    ~.
+               \                     \__. . -- -  .
+         .-~~~~~      ,    ,            ~~~~~~---...._
+      .-~___        ,'/  ,'/ ,'\          __...---~~~
+            ~-.    /._\_( ,(/_. 7,-.    ~~---...__
+           _...>-  P''6=`_/'6'~   6)    ___...--~~~
+            ~~--._ \`--') `---'   9'  _..--~~~
+                  ~\ ~~/_  ~~~   /`-.--~~
+                    `.  ---    .'   \_
+                      `. ' _.-'     | ~-.,-------._
+                  ..._../~~   ./       .-'    .-~~~-.
+            ,--~~~ ,'...\` _./.----~~.'/    /'       `-
+        _.-(      |\    `/~ _____..-' /    /      _.-~~`.
+       /   |     /. ^---~~~~       ' /    /     ,'  ~.   \
+      (    /    (  .           _ ' /'    /    ,/      \   )
+      (`. |     `\   - - - - ~   /'      (   /         .  |
+       \.\|       \            /'        \  |`.           /
+       /.'\\      `\         /'           ~-\         .  /\
+      /,   (        `\     /'                `.___..-      \
+     | |    \         `\_/'                  //      \.     |
+     | |     |                 _Seal_      /' |       |     |
+";
+
+const GOHAN: &str =
+r"
+             ___     -._
+            `-. '''--._ `-.
+               `.      '-. `.
+ _____           `.       `. \       C H I B I - G O K U
+`-.   '''---.._    \        `.\
+   `-.         '-.  \         `\
+      `.          `-.\          \_.-''''''''--._
+        `.           `                          '-.
+          `.                                       `.    __....-------...
+--..._      \                                       `--''''''''''---..._
+__...._'_-.. \                       _,                             _..-''
+`-.      '''--`           /       ,-'/|     ,                   _.-'
+   `-.                 , /|     ,'  / |   ,'|    ,|        _..-'
+      `.              /|| |    /   / |  ,'  |  ,' /        ----''''''''_`-
+        `.            ( \  \      |  | /   | ,'  //                 _.-'
+          `.        .'-\/'''\ |  '  | /  .-/''`\' //            _.-'
+    /'`.____`-.  ,''\  ''''?-.V`.   |/ .'..-P''''  /'`.     _.-'
+   '(   `.-._''  ||(?|    /'   >.\  ' /.<   `\    |P)||_..-'___.....---
+     `.   `. '-._ \ ('   |     `8      8'     |   `) /''''    _'.''
+       `.   `.   `.`.b|   `.__            __.'   |d.'  __...--''
+         `.   `.   '.`-  .---      ,-.     ---.  -'.-''
+           `.   `.   ''|      -._      _.-      |''
+             `.  .-'`.  `.       `'''''       ,'
+               `/     `.. ''--..__    __..--''
+                `.      /7.--|    ''''    |--.__
+                  ..--'| (  /'            `\  ` '--..
+               .-'      \\  |''--.    .--''|          '-.
+              <.         \\  `.    -.    ,'       ,'     >
+             (P'`.        `%,  `.      ,'        /,' .-''?)
+             P    `. \      `%,  `.  ,'         /' .'     \
+            | --'  _\||       `%,  `'          /.-'   .    )
+            |       `-.''--..   `%..--'''\\'--.'       '-  |
+ _Seal_     \          `.  .--'''  '\.\.\ \\.'       )     |
+";
+
 impl Contract {
     pub fn new() -> Self {
         #[fhe_program(scheme = "bfv")]
@@ -155,7 +224,7 @@ impl Contract {
     }
 
     pub fn mint_nft(&mut self, name: &str, public_key: &PublicKey) {
-        let total_pl = self.runtime.encrypt(Signed::from(50), public_key).unwrap();
+        let total_pl = self.runtime.encrypt(Signed::from(100), public_key).unwrap();
         let current_pl = total_pl.clone();
         let play_pl = total_pl.clone();
 
@@ -213,6 +282,7 @@ impl Contract {
             if alice_state == PlayerState::Dead && bob_state == PlayerState::Dead {
                 println!("{}", PIKACHU);
                 println!("Both contestants are vanquished!");
+                delay();
                 break;
             } else if alice_state == PlayerState::Dead {
                 bob_data.total_pl =
@@ -221,6 +291,7 @@ impl Contract {
 
                 println!("{}", PICOLO);
                 println!("{} has been defeated in combat!", alice.name);
+                delay();
                 break;
             } else if bob_state == PlayerState::Dead {
                 alice_data.total_pl = self.level_up(
@@ -232,6 +303,7 @@ impl Contract {
 
                 println!("{}", GOKU);
                 println!("{} has been defeated in combat!", bob.name);
+                delay();
                 break;
             }
 
@@ -239,13 +311,16 @@ impl Contract {
                 println!("{}", PICOLO);
                 println!("{} has emerged from the ashes and is reborn!", alice.name);
                 alice_data.current_pl = alice_data.play_pl.clone();
+                delay();
             }
 
             if bob_state == PlayerState::Reborn {
                 println!("{}", GOKU);
                 println!("{} has emerged from the ashes and is reborn!", bob.name);
                 bob_data.current_pl = bob_data.play_pl.clone();
+                delay();
             }
+
         }
     }
 }
@@ -275,13 +350,15 @@ impl Player {
         let total_pl: Signed = self.runtime.decrypt(total_pl, &self.private_key).unwrap();
         let total_pl: i64 = total_pl.into();
 
+        println!("{}", GOKU_2);
+
         if total_pl == 0 {
             println!("{} is no match for basic arithmetic! Leveling up has killed you! exiting.", self.name);
             std::process::exit(0);
         }
 
         let play_pl = Player::prompt_for_int(
-            &format!("{}, choose your play power! You maximum is {}, but keep it secret!", self.name, total_pl),
+            &format!("{}, choose your play power! Maximum is {}, and keep it secret!", self.name, total_pl),
             0,
             total_pl,
             "Foolish mortal! You are not strong enough!",
@@ -294,8 +371,10 @@ impl Player {
         let current_pl: Signed = self.runtime.decrypt(current_pl, &self.private_key).unwrap();
         let current_pl: i64 = current_pl.into();
 
+        println!("{}", GOHAN);
+
         let damage = Player::prompt_for_int(
-            &format!("{}, choose your damage! You maximum is {}, but keep it secret!", self.name, current_pl),
+            &format!("{}, choose your damage! Maximum is {}, and keep it secret!", self.name, current_pl),
             0,
             current_pl,
             "Foolish mortal! You are not strong enough!",
@@ -320,8 +399,6 @@ impl Player {
     fn prompt_for_int(prompt: &str, min: i64, max: i64, out_of_range_message: &str) -> i64 {
         let int_val;
 
-        use std::io::Write;
-
         // Blank the terminal
         println!("{}", prompt);
 
@@ -344,18 +421,21 @@ impl Player {
             };
         }
 
-        for i in 0..5 {
-            print!("{esc}c", esc = 27 as char);
-            println!("{}", 5 - i);
-            let _ = std::io::stdout().flush();
-            std::thread::sleep(std::time::Duration::from_secs(1));
-        }
-
-        print!("{esc}c", esc = 27 as char);
-        let _ = std::io::stdout().flush();
+        delay();
 
         int_val
     }
+}
+
+fn delay() {
+    for i in 0..3 {
+        println!("{}", 3 - i);
+        let _ = std::io::stdout().flush();
+        std::thread::sleep(std::time::Duration::from_secs(1));
+    }
+
+    print!("{esc}c", esc = 27 as char);
+    let _ = std::io::stdout().flush();
 }
 
 #[derive(PartialEq)]
