@@ -1,5 +1,10 @@
 # Super-Battle
-This repo contains the Alice and Bob Super Battle game demoed at ETH Prague. The game leverages the Sunscreen Fully Homomorphic Encryption (FHE) compiler to hide players' power levels. Through the power of FHE, the game loop is able to deal damage and level them up players without ever decrypting players' stats! The game plays as follows:
+This repo contains the Alice and Bob Super Battle game demoed at ETH Prague. The game leverages the Sunscreen Fully Homomorphic Encryption (FHE) compiler to hide players' power levels. Through the power of FHE, the game loop is able to deal damage and level them up players without ever decrypting players' stats! 
+
+You can easily try out the code in our [playground](playground.sunscreen.tech)!
+
+
+The game plays as follows:
 
 Power level (PL) is effectively the player's health and the maximum damage they can deal.
 
